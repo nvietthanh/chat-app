@@ -6,9 +6,10 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import ElementPlus from 'element-plus'
-import ja from 'element-plus/dist/locale/ja.mjs'
+import vi from "element-plus/es/locale/lang/vi";
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -20,7 +21,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(ElementPlus, {
-                locale: ja,
+                locale: vi,
             })
             .mount(el);
     },
