@@ -1,6 +1,6 @@
 <template>
     <Head title="Đăng nhập"/>
-    <AppLayout :isFooter="false"/>
+    <AppLayout :is-footer="false"/>
     <main>
         <div class="h-screen flex justify-center items-center bg-[#ededed]">
             <div class="m-auto form-login w-11/12">

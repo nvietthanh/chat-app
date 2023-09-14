@@ -8,7 +8,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     font-style: normal;
     font-weight: 400;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 ::-webkit-scrollbar {
@@ -66,13 +66,16 @@ body {
     width: 100%;
 }
 [type='text']:focus{
-    --tw-ring-color: none
+    --tw-ring-color: none !important;
 }
 [type='password']:focus{
-    --tw-ring-color: none
+    --tw-ring-color: none !important;
 }
 [type='number']:focus{
-    --tw-ring-color: none
+    --tw-ring-color: none !important;
+}
+.el-textarea {
+    border-radius: 4px;
 }
 .el-input__inner {
     text-align: left !important;
@@ -83,11 +86,13 @@ body {
     line-height: 32px !important;
 }
 
+.el-dialog__body {
+    color: #000 !important;
+    padding: 16px 20px !important;
+}
 .multiple-select .el-input__wrapper {
     height: unset !important;
 }
-
-.el-input__wrapper,
 .el-radio-button__inner,
 .el-dialog__body .el-radio-button:first-child > .el-radio-button__inner {
     box-shadow: 0 0 0 1px #707070 !important;
@@ -112,6 +117,10 @@ body {
     border-color: #007bff !important;
 }
 
+@media screen {
+    
+}
+
 .el-radio-button__original-radio:disabled+.el-radio-button__inner {
     color: black !important;
 }
@@ -123,11 +132,67 @@ body {
 .el-radio-button__original-radio:disabled:checked+.el-radio-button__inner {
     color: white !important;
 }
-
+.el-radio__input.is-checked+.el-radio__label {
+    color: #000 !important;
+    padding-left: 12px;
+}
 /* ==================== End custom style element plus ==================== */
 
 /* css Calendar */
 
 a.fc-daygrid-event {
     cursor: pointer;
+}
+.hidden-one-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    height: 25px;
+    -webkit-box-orient: vertical;
+}
+.hidden-two-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    height: 42px;
+    -webkit-box-orient: vertical;
+}
+.button {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+@media screen and (max-width: 768px){
+    .hidden-scroll-mobile::-webkit-scrollbar {
+        display: none;
+    }
+    .hidden-scroll-mobile {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .el-dialog__body {
+        padding-left: 12px !important;
+        padding-right: 6px !important;
+    }
+}
+
+/* Custom validate css */
+.el-form-item__label {
+    margin-bottom: 0px !important;
+    font-weight: 600 !important;
+}
+.is-required .el-form-item__label::before {
+    content: '' !important;
+    margin-right: 0px !important;
+}
+.is-required .el-form-item__label::after {
+    content: '*';
+    color: var(--el-color-danger);
+    margin-left: 4px;
+}
+.el-form-item__error {
+    font-size: 13px !important;
 }
