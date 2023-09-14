@@ -31,6 +31,15 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
+            'product_cart' => [
+                [
+                    'route' => route('product', 1),
+                    'product_name' => 'Điện thoại máy tính xách tay',
+                    'image' => '/images/devices/phone/dienthoai-1.webp',
+                    'price' => 200000,
+                    'quality' => 5
+                ]
+            ],
             'auth' => [
                 'user' => $request->user(),
             ],

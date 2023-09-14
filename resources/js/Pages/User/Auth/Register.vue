@@ -33,7 +33,7 @@
                             </div>
                         </div>
                         <div class="md:flex block gap-6">
-                            <div class="mb-[8px] w-[150px]">
+                            <div class="mb-[8px] w-[180px]">
                                 <div class="mb-[4px]">Giới tính <span class="text-[red]">*</span></div>
                                 <el-select v-model="user.gender" placeholder="Chọn giới tính">
                                     <el-option key="1" label="Nam" value="male"/>
@@ -56,7 +56,7 @@
                             </div>
                         </div>
                         <div class="md:flex block gap-6">
-                            <div class="mb-[8px] md:w-[350px] w-[100%]">
+                            <div class="mb-[8px] md:w-[400px] w-[100%]">
                                 <div class="mb-[4px]">Email <span class="text-[red]">*</span></div>
                                 <el-input v-model="user.email" placeholder="Nhập email" tabindex="1"/>
                                 <div v-if="errors.email" class="text-[14px] text-[#ff0000]">
