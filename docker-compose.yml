@@ -1,7 +1,8 @@
+version: '3'
 services:
     laravel.test:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.2
+            context: ./docker/8.2
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
@@ -25,7 +26,6 @@ services:
             - mysql
             - redis
             - minio
-            - mailpit
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -39,7 +39,7 @@ services:
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
             - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - sail
         healthcheck:
@@ -50,6 +50,18 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+            - '8080:80'
+        environment:
+            MYSQL_USERNAME: '${DB_USERNAME}'
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            PMA_HOST: mysql
+            UPLOAD_LIMIT: 100M
+        networks:
+            - sail
     redis:
         image: 'redis:alpine'
         ports:
@@ -71,8 +83,8 @@ services:
             - '${FORWARD_MINIO_PORT:-9000}:9000'
             - '${FORWARD_MINIO_CONSOLE_PORT:-8900}:8900'
         environment:
-            MINIO_ROOT_USER: sail
-            MINIO_ROOT_PASSWORD: password
+            MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
+            MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
         volumes:
             - 'sail-minio:/data/minio'
         networks:
@@ -86,25 +98,19 @@ services:
                 - 'http://localhost:9000/minio/health/live'
             retries: 3
             timeout: 5s
-    phpmyadmin:
-        image: phpmyadmin
-        restart: always
-        ports:
-            - 8080:80
+
+    soketi:
+        image: 'quay.io/soketi/soketi:latest-16-alpine'
         environment:
-            MYSQL_USERNAME: '${DB_USERNAME}'
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            PMA_HOST: mysql
-            UPLOAD_LIMIT: 100M
-        networks:
-            - sail
-    mailpit:
-        image: 'axllent/mailpit:latest'
+            SOKETI_DEBUG: '1'
+            SOKETI_METRICS_SERVER_PORT: '9601'
         ports:
-            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
-            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+            - '${SOKETI_PORT:-6001}:6001'
+            - '${SOKETI_METRICS_SERVER_PORT:-9601}:9601'
         networks:
             - sail
+        command: 'soketi start'
+
 networks:
     sail:
         driver: bridge
