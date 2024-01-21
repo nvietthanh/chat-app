@@ -1,0 +1,168 @@
+#========================
+# Define pipeline stages
+#========================
+stages:
+  - preparation
+  - test
+  - build
+  - deploy
+
+#========================
+# Define default parameters for jobs
+#========================
+image: registry.gitlab.com/thanhtuoicuoi/chat-app/php:develop
+
+cache:
+  key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+
+.build-image:
+  stage: build
+  image: docker:stable
+  needs:
+    - job: get-vendors
+      artifacts: true
+    - job: build-assets
+      artifacts: true
+  services:
+    - docker:dind
+  only:
+    - develop
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - export CI_BUILD_SHA=${CI_COMMIT_SHA:0:8}
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+#========================
+# Define jobs
+#========================
+get-vendors:
+  stage: preparation
+  image: composer
+  script:
+    - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --ignore-platform-reqs
+    - cp .env.example .env
+  artifacts:
+    paths:
+      - vendor/
+      - .env
+    expire_in: 1 days
+    when: always
+  cache:
+    paths:
+      - vendor/
+
+build-assets:
+  stage: preparation
+  needs:
+    - job: get-vendors
+      artifacts: true
+  image: node:16-alpine
+  script:
+    - echo "PUSHER_APP_KEY=$PUSHER_APP_KEY" >> .env
+    - echo "PUSHER_HOST=$PUSHER_HOST" >> .env
+    - echo "PUSHER_PORT=$PUSHER_PORT" >> .env
+    - echo "PUSHER_SCHEME=$PUSHER_SCHEME" >> .env
+    - echo "PUSHER_APP_CLUSTER=$PUSHER_APP_CLUSTER" >> .env
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - public/build/
+    expire_in: 1 days
+    when: always
+  cache:
+    paths:
+      - node_modules/
+
+# check-coding-style:
+#   stage: test
+#   needs:
+#     - job: get-vendors
+#       artifacts: true
+#   before_script:
+#     - curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+#   script:
+#     - php phpcs.phar --standard=phpcs.xml.dist
+#   cache:
+#     paths:
+#       - phpcs.phar
+
+image-php-develop:
+  extends: .build-image
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/php:develop || true
+    - docker build --pull --cache-from $CI_REGISTRY_IMAGE/php:develop --file ./docker/Dockerfile --target app-ci -t $CI_REGISTRY_IMAGE/php:$CI_BUILD_SHA .
+    # push develop image
+    - docker tag $CI_REGISTRY_IMAGE/php:$CI_BUILD_SHA $CI_REGISTRY_IMAGE/php:develop
+    - docker push $CI_REGISTRY_IMAGE/php:develop
+
+image-nginx-develop:
+  extends: .build-image
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/nginx:develop || true
+    - docker build --pull --cache-from $CI_REGISTRY_IMAGE/nginx:develop --file ./docker/Dockerfile --target web-ci -t $CI_REGISTRY_IMAGE/nginx:$CI_BUILD_SHA .
+    # push develop image
+    - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_BUILD_SHA $CI_REGISTRY_IMAGE/nginx:develop
+    - docker push $CI_REGISTRY_IMAGE/nginx:develop
+
+#========================
+# Define deploy job template
+# You MUST set SSH_PRIVATE_KEY, SSH_USER, SSH_HOST in Seting CI/CD
+# https://docs.gitlab.com/ee/ci/variables/
+#========================
+.deploy:
+  image: docker:stable
+  script:
+    # Install ssh-agent if not already installed, it is required by Docker.
+    - which ssh-agent || apk add --update --no-cache openssh-client
+
+    # Run ssh-agent (inside the build environment)
+    - eval $(ssh-agent -s)
+
+    # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    # We're using tr to fix line endings which makes ed25519 keys work
+    # without extra base64 encoding.
+    # https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+
+    # Create the SSH directory and give it the right permissions
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    # # Use ssh-keyscan to scan the keys of your private server.
+    # - ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+    # - chmod 644 ~/.ssh/known_hosts
+
+    # You can optionally disable host key checking. Be aware that by adding that
+    # you are susceptible to man-in-the-middle attacks.
+    # WARNING: Use this only with the Docker executor, if you use it with shell
+    # you will overwrite your user's SSH config.
+    - if [[ -f /.dockerenv ]]; then
+        echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >> ~/.ssh/config;
+        chmod 644 ~/.ssh/config;
+      fi
+
+    # Setup docker and get image
+    - export DOCKER_HOST=ssh://$SSH_USER@$SSH_HOST
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - if [[ $CI_COMMIT_REF_SLUG == 'master' ]]; then
+        docker pull $CI_REGISTRY_IMAGE/php:latest;
+        docker pull $CI_REGISTRY_IMAGE/nginx:latest;
+      else
+        docker pull $CI_REGISTRY_IMAGE/php:develop;
+        docker pull $CI_REGISTRY_IMAGE/nginx:develop;
+      fi
+
+    # Deploy
+    - ssh $SSH_USER@$SSH_HOST 'cd /apps/chat-app; docker-compose -f 'dc.yml' up -d; docker-compose exec app php artisan migrate'
+
+deploy:dev:
+  stage: deploy
+  extends: .deploy
+  only:
+    - develop
+  environment:
+    name: staging
