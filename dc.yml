@@ -1,0 +1,109 @@
+version: '3'
+services:
+    # Redis Service
+    redis:
+        image: redis:alpine
+        volumes:
+            - 'redisdata:/data'
+        restart: unless-stopped
+        networks:
+            - app-network
+
+    # MySQL Service
+    mysql:
+        image: 'mysql/mysql-server:8.0'
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - dbdata:/var/lib/mysql/
+        command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
+        networks:
+            - app-network
+
+    # Phpmyadmin Service
+    phpmyadmin:
+        image: phpmyadmin
+        depends_on:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+        networks:
+            - app-network
+        ports:
+            - 8080:80
+        restart: unless-stopped
+    
+    # MinIO Service
+    minio:
+        image: minio/minio:latest
+        command: server /data --console-address ":9002"
+        environment:
+            MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+            MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+        networks:
+            - app-network
+        ports:
+            - 9000:9000
+            - 9002:9002
+        restart: unless-stopped
+        volumes:
+            - 'miniodata:/data'
+
+    # Nginx Service
+    web:
+        image: registry.gitlab.com/thanhtuoicuoi/chat-app/nginx:develop
+        environment:
+            PHP_FPM_ENDPOINT: app:9000
+        depends_on:
+            - app
+        networks:
+            - app-network
+        ports:
+            - 80:80
+        restart: unless-stopped
+
+    # PHP Service
+    app:
+        image: registry.gitlab.com/thanhtuoicuoi/chat-app/php:develop
+        depends_on:
+            - mysql
+            - redis
+            - minio
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - .env:/var/www/.env
+        networks:
+            - app-network
+
+    # # Cron Service
+    # cron:
+    #     extends:
+    #         service: app
+    #     command: php /var/www/artisan schedule:work 
+
+    # # Worker Service
+    # worker:
+    #     extends:
+    #         service: app
+    #     command: php /var/www/artisan horizon
+
+#Docker Networks
+networks:
+    app-network:
+        driver: bridge
+
+#Volumes
+volumes:
+    dbdata:
+        driver: local
+    redisdata:
+        driver: local
+    miniodata:
+        driver: local
+
