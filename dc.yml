@@ -69,6 +69,7 @@ services:
 
     # PHP Service
     app:
+        name: app
         image: registry.gitlab.com/thanhtuoicuoi/chat-app/php:develop
         depends_on:
             - mysql
