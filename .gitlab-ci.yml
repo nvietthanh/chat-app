@@ -157,7 +157,7 @@ image-nginx-develop:
       fi
 
     # Deploy
-    - ssh $SSH_USER@$SSH_HOST 'cd /apps/chat-app; docker-compose -f 'dc.yml' up -d; docker exec -t chat-app_app_1 php artisan migrate'
+    - ssh $SSH_USER@$SSH_HOST 'cd /apps/chat-app; docker-compose -f 'dc.yml' up -d; docker exec -ti -d /bin/bash chat-app_app_1 php artisan migrate'
 
 deploy:dev:
   stage: deploy
