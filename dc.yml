@@ -56,7 +56,7 @@ services:
 
     # Nginx Service
     web:
-        image: registry.gitlab.com/thanhtuoicuoi/chat-app/nginx:develop
+        image: ghcr.io/nvietthanh/chat-app/nginx:develop
         environment:
             PHP_FPM_ENDPOINT: app:9000
         depends_on:
@@ -65,11 +65,15 @@ services:
             - app-network
         ports:
             - 80:80
+            - 443:443
+        volumes:
+            - /etc/letsencrypt/ssl/fullchain.pem:/etc/nginx/ssl/fullchain.pem
+            - /etc/letsencrypt/ssl/privkey.pem:/etc/nginx/ssl/privkey.pem
         restart: unless-stopped
 
     # PHP Service
     app:
-        image: registry.gitlab.com/thanhtuoicuoi/chat-app/php:develop
+        image: ghcr.io/nvietthanh/chat-app/php:develop
         depends_on:
             - mysql
             - redis
@@ -81,17 +85,17 @@ services:
         networks:
             - app-network
 
-    # # Cron Service
-    # cron:
-    #     extends:
-    #         service: app
-    #     command: php /var/www/artisan schedule:work 
+    # Cron Service
+    cron:
+        extends:
+            service: app
+        command: php /var/www/artisan schedule:work 
 
-    # # Worker Service
-    # worker:
-    #     extends:
-    #         service: app
-    #     command: php /var/www/artisan horizon
+    # Worker Service
+    worker:
+        extends:
+            service: app
+        command: php /var/www/artisan horizon
 
 #Docker Networks
 networks:
