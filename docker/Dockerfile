@@ -14,15 +14,9 @@ RUN set -eux; \
     apk --update --no-cache add \
         curl \
         su-exec \
-        imagemagick-dev \
-        $PHPIZE_DEPS \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && docker-php-ext-install exif \
-    && docker-php-ext-enable exif \
     ;
 
-COPY docker/policy.xml /etc/ImageMagick-6/policy.xml
+RUN docker-php-ext-install exif;
 
 ENTRYPOINT ["/usr/local/bin/start-container"]
 CMD ["php-fpm"]
@@ -59,7 +53,7 @@ COPY --from=vendor /var/www/vendor ./vendor
 
 RUN npm ci --quiet
 
-COPY vite.config.js ./
+COPY postcss.config.js vite.config.js tailwind.config.js ./
 COPY resources      ./resources
 COPY public         ./public
 
