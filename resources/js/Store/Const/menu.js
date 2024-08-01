@@ -54,19 +54,19 @@ export const Menu = [
         icon: 'bi bi-gear text-[20px] mr-[8px]',
         routeList: [
             {
-                route: route('setting.profile'),
+                route: route('buyer.profile'),
                 routeName: 'Quản lý thông tin cá nhân'
             },
             {
-                route: route('setting.order'),
+                route: route('buyer.order'),
                 routeName: 'Đơn mua'
             },
             {
-                route: route('setting.notice'),
+                route: route('buyer.notice'),
                 routeName: 'Thông báo'
             },
             {
-                route: route('setting.ship'),
+                route: route('buyer.ship'),
                 routeName: 'Địa chỉ giao hàng'
             },
         ]

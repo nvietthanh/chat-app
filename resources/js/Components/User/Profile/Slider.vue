@@ -2,7 +2,7 @@
     <div class="col-start-1 sm:col-end-5 lg:col-end-4 col-end-13 bg-[#fff] px-[18px] py-[18px] sm:block hidden">
         <div>
             <div class="mb-[12px]">
-                <Link v-if="checkTab('maker')" :href="route('setting.profile')">
+                <Link v-if="checkTab('maker')" :href="route('buyer.profile')">
                     <i class="bi bi-chevron-left"></i>
                     <span class="ml-[4px]">Trang mua hàng</span>
                 </Link>
@@ -30,19 +30,19 @@
                 </Link>
             </template>
             <template v-else>
-                <Link :href="route('setting.profile')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'account' }">
+                <Link :href="route('buyer.profile')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'account' }">
                     <i class="bi bi-person text-[20px] ml-[8px]"></i>
                     <span class="ml-[12px] mt-[2px]">Tài khoản của tôi</span>
                 </Link>
-                <Link :href="route('setting.order')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'order' }">
+                <Link :href="route('buyer.order')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'order' }">
                     <i class="bi bi-clipboard2 text-[18px] ml-[8px]"></i>
                     <span class="ml-[14px]">Đơn mua</span>
                 </Link>
-                <Link :href="route('setting.notice')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'notice' }">
+                <Link :href="route('buyer.notice')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'notice' }">
                     <i class="bi bi-bell text-[18px] ml-[8px]"></i>
                     <span class="ml-[12px]">Thông báo</span>
                 </Link>
-                <Link :href="route('setting.ship')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'ship' }">
+                <Link :href="route('buyer.ship')" class="py-[6px] flex items-center" :class="{ 'text-[#d0011b]' : selected == 'ship' }">
                     <i class="bi bi-truck text-[18px] ml-[8px]"></i>
                     <span class="ml-[12px]">Địa chỉ giao hàng</span>
                 </Link>

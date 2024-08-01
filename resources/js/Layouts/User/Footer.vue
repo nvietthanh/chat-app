@@ -1,5 +1,5 @@
 <template>
-    <div class="py-[18px] mb-[2px]">
+    <div class="py-[18px]">
         <div class="footer-main text-white md:grid md:grid-cols-4">
             <div class="md:py-[0px] py-[12px]">
                 <div class="uppercase">

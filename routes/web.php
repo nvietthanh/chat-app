@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FrontEnd\User\HomeController;
 use App\Http\Controllers\FrontEnd\User\MakerController;
 use App\Http\Controllers\FrontEnd\User\NoticeController;
@@ -20,28 +24,29 @@ use Inertia\Inertia;
 |
 */
 
-// Route::get('/', function () {
-//     return Inertia::render('Welcome', [
-//         'canLogin' => Route::has('login'),
-//         'canRegister' => Route::has('register'),
-//         'laravelVersion' => Application::VERSION,
-//         'phpVersion' => PHP_VERSION,
-//     ]);
-// });
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])
+                ->name('register');
 
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::post('register', [RegisteredUserController::class, 'store']);
 
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])
+                ->name('login');
 
-require __DIR__.'/auth.php';
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+                ->name('password.request');
 
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+                ->name('password.email');
+
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+                ->name('password.reset');
+
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+                ->name('password.store');
+});
 
 Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/product/{id}', [HomeController::class, 'product'])->name('product');
@@ -53,7 +58,7 @@ Route::get('/payment', [HomeController::class, 'payment'])->name('payment');
 
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 
-Route::prefix('/setting')->as('setting.')->group(function () {
+Route::prefix('/buyer')->as('buyer.')->group(function () {
     Route::get('/profile', [ProfileController::class, 'account'])->name('profile');
     Route::get('/order', [OrderController::class, 'index'])->name('order');
     Route::get('/address', [ProfileController::class, 'address'])->name('ship');
