@@ -11,14 +11,14 @@
                     <el-form  @keyup.enter.prevent="login()">
                         <div class="mb-[8px]">
                             <div class="mb-[4px]">Email</div>
-                            <el-input v-model="user.email" placeholder="Nhập email đăng nhập" tabindex="1"/>
+                            <el-input v-model="form.email" placeholder="Nhập email đăng nhập" tabindex="1"/>
                             <div v-if="errors.email" class="text-[14px] text-[#ff0000]">
                                 {{ errors.email }}
                             </div>
                         </div>
                         <div class="mb-[8px]">
                             <div class="mb-[4px]">Mật khẩu</div>
-                            <el-input v-model="user.password" type="password" placeholder="Nhập email đăng nhập" show-password/>
+                            <el-input v-model="form.password" type="password" placeholder="Nhập email đăng nhập" show-password/>
                             <div v-if="errors.password" class="text-[14px] text-[#ff0000]">
                                 {{ errors.password }}
                             </div>
@@ -75,28 +75,27 @@
             Link,
             AppLayout
         },
-        async created() {
-        },
         data: function () {
             return {
-                user: {
-                    email: '',
-                    password: ''
-                },
-                errors: [   ]
+                form: this.$inertia.form({
+                    email: null,
+                    password: null,
+                    remember: false,
+                }),
+                errors: []
             }
         },
         methods: {
             validateUser() {
                 let validate = true;
-                if (!(this.user.email && this.user.email.trim())) {
+                if (!(this.form.email && this.form.email.trim())) {
                     validate = false
                     this.errors.email = "Vui lòng nhập email"
-                } else if (!this.validateEmail(this.user.email)) {
+                } else if (!this.validateEmail(this.form.email)) {
                     validate = false
                     this.errors.email = "Email không đúng định dạng"
                 }
-                if (!(this.user.password && this.user.password.trim())) {
+                if (!(this.form.password && this.form.password.trim())) {
                     validate = false
                     this.errors.password = "Vui lòng nhập mật khẩu"
                 }
@@ -113,7 +112,20 @@
             async login() {
                 this.errors = []
                 if(this.validateUser()) {
-                    
+                    this.form.post(this.appRoute('admin.login.post'), {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            this.loading = false
+                        },
+                        onError: (errors) => {
+                            this.loading = false
+                            this.setErrors(errors)
+                            this.$message({
+                                message: 'ログインが失敗しました。',
+                                type: 'error',
+                            })
+                        },
+                    })
                 }
             },
         }

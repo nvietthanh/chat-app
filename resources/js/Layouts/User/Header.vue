@@ -7,16 +7,7 @@
                 </Link>
             </div>
             <div class="flex items-center button">
-                <!-- <div class="flex items-center">
-                    <Link :href="route('login')">
-                        Đăng nhập
-                    </Link>
-                    <div class="w-[1px] h-[14px] bg-[#fff] mx-[8px]"></div>
-                    <Link :href="route('register')">
-                        Đăng ký
-                    </Link>
-                </div> -->
-                <div id="header-menu" class="relative cursor-pointer">
+                <div v-if="user" id="header-menu" class="relative cursor-pointer">
                     <div class="flex items-center">
                         <i class="bi bi-person text-[18px]"></i>
                         <span class="ml-[4px]">Nguyễn Viết Thanh</span>
@@ -27,11 +18,11 @@
                                 <i class="bi bi-cart text-[20px] ml-[8px]"></i>
                                 <span class="ml-[12px]">Giỏ hàng</span>
                             </Link>
-                            <Link :href="route('setting.profile')" class="py-[4px] flex items-center">
+                            <Link :href="route('buyer.profile')" class="py-[4px] flex items-center">
                                 <i class="bi bi-person text-[20px] ml-[8px]"></i>
                                 <span class="ml-[12px]">Thông tin cá nhân</span>
                             </Link>
-                            <Link :href="route('setting.order')" class="py-[4px] flex items-center">
+                            <Link :href="route('buyer.order')" class="py-[4px] flex items-center">
                                 <i class="bi bi-bag text-[18px] ml-[8px]"></i>
                                 <span class="ml-[12px]">Quản lý đơn hàng</span>
                             </Link>
@@ -41,6 +32,15 @@
                             </Link>
                         </div>
                     </div>
+                </div>
+                <div v-else class="flex items-center">
+                    <Link :href="route('login')">
+                        Đăng nhập
+                    </Link>
+                    <div class="w-[1px] h-[14px] bg-[#fff] mx-[8px]"></div>
+                    <Link :href="route('register')">
+                        Đăng ký
+                    </Link>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-center">
-                                    <Link :href="route('setting.notice')"
+                                    <Link :href="route('buyer.notice')"
                                         class="button mb-[4px] mt-[8px] w-[140px] text-center h-[34px] leading-[34px] border-[1px] text-[white] bg-[#d0011b]">
                                         Xem tất cả
                                     </Link>
@@ -202,7 +202,8 @@ export default {
         return {
             keyword: '',
             isShowMenu: false,
-            listMenu: Menu
+            listMenu: Menu,
+            user: this.$page.props.auth.user ?? null,
         }
     },
     created() {
