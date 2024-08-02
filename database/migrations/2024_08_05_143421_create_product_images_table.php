@@ -11,22 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_profile', function (Blueprint $table) {
+        Schema::create('product_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
+            $table->foreignId('product_id')
                 ->constrained(
-                    table: 'users'
+                    table: 'products'
                 )
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('gender');
-            $table->string('phone_number');
-            $table->date('birthday')->nullable();
-            $table->string('address')->nullable();
-            $table->string('image_url')->nullable();
+            $table->string('image_url');
+            $table->string('thumbnail_image_url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -35,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_profile');
+        Schema::dropIfExists('product_images');
     }
 };

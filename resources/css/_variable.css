@@ -1,0 +1,72 @@
+:root {
+    --tw-pink-dark-color: #ce3c99;
+    --tw-pink-light-color: #ce3c982e;
+
+
+    --tw-white: #ffffff;
+
+    /* gray */
+    --tw-gray-50: #fafafa;
+    --tw-gray-100: #fafbff;
+    --tw-gray-200: #f0f2f5;
+    --tw-gray-300: #f4f4f5;
+    --tw-gray-400: #cdd8df;
+    --tw-gray-500: #6e7a7d;
+
+    /* blue */
+    --tw-blue-200: #d3f5ff;
+    --tw-blue-300: #e4f4fc;
+    --tw-blue-400: #2078ce;
+    --tw-blue-500: #0082be;
+
+    /* black */
+    --tw-black-300: #22313f;
+    --tw-black-400: #222222;
+
+    /* css input size */
+    --el-component-size-small: 30px !important;
+    --el-component-size: 36px !important;
+    --el-component-size-large: 38px !important;
+
+    /* css menu height */
+    --el-menu-item-height: 42px !important;
+
+    /* color element plus primary */
+    --el-color-primary: #d0011b !important;
+    --el-color-primary-dark-2: #e7263f !important;
+    --el-color-primary-light-3: #e7263f !important;
+    --el-color-primary-light-5: #e7263f !important;
+
+    /* color element plus danger */
+    --el-color-danger: #D81F1F !important;
+    --el-color-danger-dark-2: #e24c4c !important;
+    --el-color-danger-light-3: #e24c4c !important;
+    --el-color-danger-light-5: #e24c4c !important;
+
+    /* color element plus info */
+    --el-color-info: #fff !important;
+    --el-color-info-dark-2: #fff !important;
+    --el-color-info-light-3: #fff !important;
+    --el-color-info-light-5: #fff !important;
+
+
+    /* color element plus default */
+    --el-color-default: #9db0e6 !important;
+    --el-color-default-dark-2: #b7c8f5 !important;
+    --el-color-default-light-3: #9db0e6 !important;
+    --el-color-default-light-5: #9db0e6 !important;
+
+    /* color element plus cancel */
+    --el-color-cancel: #cecece !important;
+    --el-color-cancel-dark-2: #d4d4d4 !important;
+    --el-color-cancel-light-3: #cecece !important;
+    --el-color-cancel-light-5: #cecece !important;
+
+    /* color element plus close */
+    --el-color-close: #9DB0E6;
+    --el-color-close-dark-2: #f5f5f5 !important;
+    --el-color-close-light-3: #f5f5f5 !important;
+    --el-color-close-light-5: #f5f5f5 !important;
+
+    --tw-loading-spinner-size-small: 26px !important;
+}

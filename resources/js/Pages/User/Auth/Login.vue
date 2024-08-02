@@ -8,30 +8,43 @@
                     Đăng nhập
                 </div>
                 <div class="px-[30px] pt-[24px] pb-[32px]">
-                    <el-form  @keyup.enter.prevent="login()">
-                        <div class="mb-[8px]">
-                            <div class="mb-[4px]">Email</div>
-                            <el-input v-model="form.email" placeholder="Nhập email đăng nhập" tabindex="1"/>
-                            <div v-if="errors.email" class="text-[14px] text-[#ff0000]">
-                                {{ errors.email }}
-                            </div>
-                        </div>
-                        <div class="mb-[8px]">
-                            <div class="mb-[4px]">Mật khẩu</div>
-                            <el-input v-model="form.password" type="password" placeholder="Nhập email đăng nhập" show-password/>
-                            <div v-if="errors.password" class="text-[14px] text-[#ff0000]">
-                                {{ errors.password }}
-                            </div>
-                        </div>
+                    <el-form 
+                        ref="form" :model="formData"
+                        :rules="rules" label-position="top"
+                        @keyup.enter.prevent="doSubmit()"
+                    >
+                        <el-form-item 
+                            label="Email" prop="email"
+                            :inline-message="hasError('email')"
+                            :error="getError('email')"
+                        >
+                            <el-input
+                                v-model="formData.email"
+                                size="large"
+                                placeholder="Nhập email đăng nhập"
+                            />
+                        </el-form-item>
+                        <el-form-item 
+                            label="Mật khẩu" prop="password"
+                            :inline-message="hasError('password')"
+                            :error="getError('password')"
+                        >
+                            <el-input
+                                v-model="formData.password"
+                                type="password" size="large"
+                                placeholder="Nhập mật khẩu"
+                                show-password
+                            />
+                        </el-form-item>
                         <div class="mb-[18px]">
                             <Link :href="route('password.request')" class="text-[blue]">
                                 Quên mật khẩu?
                             </Link>
                         </div>
                         <div class="flex justify-center">
-                            <button type="button" @click="login()" class="px-[14px] py-[6px] rounded-[4px] bg-[#d0011b] text-white">
+                            <el-button type="primary" size="large" @click="doSubmit()">
                                 Đăng nhập
-                            </button>   
+                            </el-button>   
                         </div>
                     </el-form>
                     <div class="mb-[28px]">
@@ -56,7 +69,7 @@
                         </div>
                     </div>
                     <div class="flex justify-center">
-                        <Link :href="route('register')">
+                        <Link :href="route('form-register')">
                             Bạn chưa có tài khoản? <span class="text-[#d0011b]">Đăng ký</span>
                         </Link>
                     </div>
@@ -66,70 +79,57 @@
     </main>
 </template>
 <script>
-    import { Head, Link, useForm } from '@inertiajs/vue3';
-    import AppLayout from '@/Layouts/User/Layout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/User/Layout.vue';
+import form from '@/Mixins/form';
 
-    export default {
-        components: {
-            Head,
-            Link,
-            AppLayout
-        },
-        data: function () {
-            return {
-                form: this.$inertia.form({
-                    email: null,
-                    password: null,
-                    remember: false,
-                }),
-                errors: []
-            }
-        },
-        methods: {
-            validateUser() {
-                let validate = true;
-                if (!(this.form.email && this.form.email.trim())) {
-                    validate = false
-                    this.errors.email = "Vui lòng nhập email"
-                } else if (!this.validateEmail(this.form.email)) {
-                    validate = false
-                    this.errors.email = "Email không đúng định dạng"
-                }
-                if (!(this.form.password && this.form.password.trim())) {
-                    validate = false
-                    this.errors.password = "Vui lòng nhập mật khẩu"
-                }
-                return validate
-            },
-            validateEmail(email) {
-                let validEmail = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                if (email.match(validEmail)) {
-                    return true
-                } else {
-                    return false
-                }
-            },
-            async login() {
-                this.errors = []
-                if(this.validateUser()) {
-                    this.form.post(this.appRoute('admin.login.post'), {
-                        preserveScroll: true,
-                        onSuccess: () => {
-                            this.loading = false
-                        },
-                        onError: (errors) => {
-                            this.loading = false
-                            this.setErrors(errors)
-                            this.$message({
-                                message: 'ログインが失敗しました。',
-                                type: 'error',
-                            })
-                        },
-                    })
-                }
+export default {
+    components: {
+        Head,
+        Link,
+        AppLayout
+    },
+    mixins: [form],
+    data: function () {
+        return {
+            formData: this.$inertia.form({
+                email: null,
+                password: null,
+                remember: false,
+            }),
+            rules: {
+                email: [
+                    { required: true, message: 'Vui lòng nhập email', trigger: ['change', 'blur'] },
+                    { type: 'email', message: 'Trường này định dạng là email', trigger: ['change', 'blur'] },
+                ],
+                password: [
+                    { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                    { min: 8, message: 'Tối thiểu 8 ký tự',trigger: ['change', 'blur'] },
+                    { max: 16, message: 'Tối đa 16 ký tự',trigger: ['change', 'blur'] },
+                ],
             },
         }
+    },
+    methods: {
+        async submit() {
+            this.formData.post(route('store-login'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    this.loading = false
+                    this.$inertia.visit(route('home'))
+                },
+                onError: (errors) => {
+                    this.loading = false
+                    this.setErrors(errors)
+                    this.$message({
+                        message: 'Vui lòng kiểm tra lại thông tin đăng nhập',
+                        type: 'error',
+                    })
+                },
+            })
+        },
     }
+}
 </script>
 <style>
 .form-login {

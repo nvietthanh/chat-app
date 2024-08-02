@@ -2,7 +2,7 @@
     <Head title="Trang chủ" />
     <AppLayout :isFooter="true">
         <template v-slot:main>
-            <div class="main-tab">
+            <div class="main-home">
                 <div id="calrousel-advertist" class="mb-[24px]">
                     <el-carousel trigger="click" type="card" autoplay :pause-on-hover="true">
                         <el-carousel-item v-for="item in 4" :key="item">
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="device-sales">
+                <div id="product-sales">
                     <div class="mt-[18px] px-[12px] py-[18px] bg-[#ff685f] rounded-[8px]">
                         <div class="mb-[18px] flex">
                             <img src="/images/icon/flash.svg" alt="" class="w-[70px]">
@@ -80,34 +80,8 @@
                         </div>
                         <div class="mb-[12px]">
                             <div class="grid md:grid-cols-4 lg:grid-cols-5 grid-cols-2 gap-4">
-                                <div v-for="index in 8" class="bg-[white] rounded-[4px]">
-                                    <Link :href="route('product', 1)">
-                                        <img src="/images/devices/phone/dienthoai-1.webp" alt="" class="w-[100%] rounded-t-[4px] border-b-[1px] border-[#D8D9DA]">
-                                        <div class="px-[12px] pb-[12px] mt-[8px] min-h-[150px]">
-                                            <div>OPPO Reno10 5G 256GB Xanh</div>
-                                            <div class="font-bold py-[4px]">
-                                                <div class="flex items-end text-[12px]">
-                                                    <div class="line-through">
-                                                        8.490.000₫
-                                                    </div>
-                                                    <div class="text-[14px] ml-[18px] text-[#d0021c]">-5%</div>
-                                                </div>
-                                                <div class="text-[#d0021c] text-[14px]">
-                                                    8.490.000₫
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center">
-                                                <div class="text-[#fb6e30] text-[10px]">
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-half mr-[2px]"></i>
-                                                </div>
-                                                <span class="ml-[8px] text-[12px]">Đã bán 0k</span>
-                                            </div>
-                                        </div>
-                                    </Link>
+                                <div v-for="(product, index) in productSales" class="bg-[white] rounded-[4px]">
+                                    <Product :product=product />
                                 </div>
                             </div>
                             <div class="my-[12px] flex justify-center">
@@ -149,7 +123,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="device-populars">
+                <div id="product-populars">
                     <div class="bg-[white] px-[12px] mt-[18px] py-[18px] rounded-[8px]">
                         <div class="mb-[18px]">
                             <span class="text-[21px] uppercase font-bold">Sản phẩm bán chạy</span>
@@ -220,7 +194,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="device-proposes">
+                <div id="product-sugestion">
                     <div class="px-[12px] mt-[18px] py-[18px] rounded-[8px]">
                         <div class="mb-[18px]">
                             <span class="text-[21px] uppercase font-bold">Gợi ý hôm nay</span>
@@ -245,34 +219,11 @@
                                 </div>
                             </div>
                             <div class="grid md:grid-cols-4 lg:grid-cols-5 grid-cols-2 gap-4">
-                                <div v-for="index in 8" class="bg-[white] rounded-[4px] mb-[12px] border-[1px] border-[#D8D9DA]">
-                                    <Link :href="route('product', 1)">
-                                        <img src="/images/devices/phone/dienthoai-1.webp" alt="" class="w-[100%] rounded-t-[4px] border-b-[1px] border-[#D8D9DA]">
-                                        <div class="px-[12px] pb-[12px] mt-[8px] min-h-[150px]">
-                                            <div>OPPO Reno10 5G 256GB Xanh</div>
-                                            <div class="font-bold my-[4px]">
-                                                <div class="flex items-end text-[12px]">
-                                                    <div class="line-through">
-                                                        8.490.000₫
-                                                    </div>
-                                                    <div class="text-[14px] ml-[18px] text-[#d0021c]">-5%</div>
-                                                </div>
-                                                <div class="text-[#d0021c] text-[14px]">
-                                                    8.490.000₫
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center">
-                                                <div class="text-[#fb6e30] text-[10px]">
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-fill mr-[2px]"></i>
-                                                    <i class="bi bi-star-half mr-[2px]"></i>
-                                                </div>
-                                                <span class="ml-[8px] text-[12px]">Đã bán 0k</span>
-                                            </div>
-                                        </div>
-                                    </Link>
+                                <div
+                                    v-for="(product, index) in productSugestions"
+                                    class="bg-[white] rounded-[4px] border-[1px] border-[#D8D9DA]"
+                                >
+                                    <Product :product=product />
                                 </div>
                             </div>
                         </div>
@@ -298,23 +249,36 @@
     </AppLayout>
 </template>
 <script>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/User/Layout.vue';
+import price from '@/Lib/price'
+import Product from '@/Components/Product.vue'
 
 export default {
     components: {
         Head,
         Link,
         AppLayout,
+        Product
     },
+    mixins: [price],
     async created() {
+        this.fetchData()
     },
     data: function () {
         return {
+            productSales: null,
+            productSugestions: null,
         }
     },
     methods: {
-
+        fetchData() {
+            axios.get(route('api.home.product'))
+                .then(({data}) => {
+                    this.productSales = data.data
+                    this.productSugestions = data.data
+                })
+        }
     }
 }
 </script>

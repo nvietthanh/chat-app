@@ -30,6 +30,18 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $currentUser = null;
+        if (auth('user')->check()) {
+            $user = auth('user')->user();
+            $profile = $user->profile;
+
+            $currentUser = [
+                'id' => $user->id,
+                'fullname' => $profile->fullname,
+                'image_url' => $profile->image_url,
+            ];
+        }
+
         return array_merge(parent::share($request), [
             'product_cart' => [
                 [
@@ -37,17 +49,12 @@ class HandleInertiaRequests extends Middleware
                     'product_name' => 'Điện thoại máy tính xách tay',
                     'image' => '/images/devices/phone/dienthoai-1.webp',
                     'price' => 200000,
-                    'quality' => 5
+                    'quantity' => 5
                 ]
             ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $currentUser,
             ],
-            'ziggy' => function () use ($request) {
-                return array_merge((new Ziggy)->toArray(), [
-                    'location' => $request->url(),
-                ]);
-            },
         ]);
     }
 }

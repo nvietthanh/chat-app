@@ -7,88 +7,124 @@
                 <div class="border-b-[2px] border-[#00000029] px-[30px] py-[18px] text-center text-[#d0011b] font-bold text-[20px]">
                     Đăng ký tài khoản
                 </div>
-                <div class="w-[100%] px-[30px] pt-[24px] pb-[32px]">
-                    <el-form  @keyup.enter.prevent="register()">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="mb-[8px]">
-                                <div class="mb-[4px]">Họ <span class="text-[red]">*</span></div>
-                                <el-input v-model="user.first_name" placeholder="Nhập họ"/>
-                                <div v-if="errors.first_name" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.first_name }}
-                                </div>
-                            </div>
-                            <div class="mb-[8px]">
-                                <div class="mb-[4px]">Tên <span class="text-[red]">*</span></div>
-                                <el-input v-model="user.last_name" placeholder="Nhập tên"/>
-                                <div v-if="errors.last_name" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.last_name }}
-                                </div>
-                            </div>
+                <div class="w-[100%] md:px-[30px] px-[18px] pt-[24px] pb-[32px]">
+                    <el-form 
+                        ref="form" :model="formData"
+                        :rules="rules" label-position="top"
+                        @keyup.enter.prevent="doSubmit()"
+                    >
+                        <div class="grid grid-cols-2 md:gap-6 gap-4">
+                            <el-form-item 
+                                label="Họ" prop="first_name"
+                                :inline-message="hasError('first_name')"
+                                :error="getError('first_name')"
+                            >
+                                <el-input v-model="formData.first_name" placeholder="Nhập họ"/>
+                            </el-form-item>
+                            <el-form-item 
+                                label="Tên" prop="last_name"
+                                :inline-message="hasError('last_name')"
+                                :error="getError('last_name')"
+                            >
+                                <el-input v-model="formData.last_name" placeholder="Nhập tên"/>
+                            </el-form-item>
                         </div>
                         <div class="mb-[8px] md:w-[350px] w-[100%]">
-                            <div class="mb-[4px]">Địa chỉ</div>
-                            <el-input v-model="user.address" placeholder="Nhập địa chỉ"/>
-                            <div v-if="errors.address" class="text-[14px] text-[#ff0000]">
-                                {{ errors.address }}
+                            <el-form-item 
+                                label="Địa chỉ" prop="address"
+                                :inline-message="hasError('address')"
+                                :error="getError('address')"
+                            >
+                                <el-input v-model="formData.address" placeholder="Nhập địa chỉ"/>
+                            </el-form-item>
+                        </div>
+                        <div class="w-full flex md:gap-6 gap-4">
+                            <div class="md:min-w-[160px] w-full">
+                                <el-form-item 
+                                    label="Giới tính" prop="gender"
+                                    :inline-message="hasError('gender')"
+                                    :error="getError('gender')"
+                                >
+                                    <el-select v-model="formData.gender" size="large" placeholder="Giới tính">
+                                        <el-option key="1" label="Nam" :value="1"/>
+                                        <el-option key="2" label="Nữ" :value="2"/>
+                                    </el-select>
+                                </el-form-item>
+                            </div>
+                            <div class="md:min-w-[160px] w-full">
+                                <el-form-item 
+                                    label="Ngày sinh" prop="birthday"
+                                    :inline-message="hasError('birthday')"
+                                    :error="getError('birthday')"
+                                >
+                                    <el-date-picker
+                                        v-model="formData.birthday"
+                                        type="date" size="large"
+                                        placeholder="Nhập ngày sinh"
+                                        format="YYYY/MM/DD"
+                                        value-format="YYYY/MM/DD"
+                                        class="w-[100px]"
+                                    />
+                                </el-form-item>
                             </div>
                         </div>
-                        <div class="md:flex block gap-6">
-                            <div class="mb-[8px] w-[180px]">
-                                <div class="mb-[4px]">Giới tính <span class="text-[red]">*</span></div>
-                                <el-select v-model="user.gender" placeholder="Chọn giới tính">
-                                    <el-option key="1" label="Nam" value="male"/>
-                                    <el-option key="2" label="Nữ" value="female"/>
-                                </el-select>
-                                <div v-if="errors.gender" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.gender }}
-                                </div>
+                        <div class="md:flex block md:gap-6 gap-4">
+                            <div class="md:w-[350px] w-full">
+                                <el-form-item 
+                                    label="Email" prop="email"
+                                    :inline-message="hasError('email')"
+                                    :error="getError('email')"
+                                >
+                                    <el-input v-model="formData.email" size="large" placeholder="Nhập email"/>
+                                </el-form-item>
                             </div>
-                            <div class="mb-[8px]">
-                                <div class="mb-[4px]">Ngày sinh <span class="text-[red]">*</span></div>
-                                <el-date-picker
-                                    v-model="user.birth_day"
-                                    type="date"
-                                    placeholder="Nhập ngày sinh"
+                            <div class="md:w-[350px] w-full">
+                                <el-form-item 
+                                    label="Số điện thoại" prop="phone_number"
+                                    :inline-message="hasError('phone_number')"
+                                    :error="getError('phone_number')"
+                                >
+                                    <el-input v-model="formData.phone_number" size="large" placeholder="Nhập số điện thoại"/>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <div class="md:w-[350px] w-full">
+                            <el-form-item 
+                                label="Mật khẩu" prop="password"
+                                :inline-message="hasError('password')"
+                                :error="getError('password')"
+                            >
+                                <el-input
+                                    v-model="formData.password"
+                                    type="password" size="large"
+                                    placeholder="Nhập mật khẩu"
+                                    show-password
                                 />
-                                <div v-if="errors.birth_day" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.birth_day }}
-                                </div>
-                            </div>
+                            </el-form-item>
                         </div>
-                        <div class="md:flex block gap-6">
-                            <div class="mb-[8px] md:w-[400px] w-[100%]">
-                                <div class="mb-[4px]">Email <span class="text-[red]">*</span></div>
-                                <el-input v-model="user.email" placeholder="Nhập email" tabindex="1"/>
-                                <div v-if="errors.email" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.email }}
-                                </div>
-                            </div>
-                            <div class="mb-[8px] md:w-[250px] w-[200px]">
-                                <div class="mb-[4px]">Số điện thoại <span class="text-[red]">*</span></div>
-                                <el-input v-model="user.phone_number" placeholder="Nhập số điện thoại" tabindex="1"/>
-                                <div v-if="errors.phone_number" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.phone_number }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-[8px] w-[180px]">
-                                <div class="mb-[4px]">Mật khẩu <span class="text-[red]">*</span></div>
-                                <el-input v-model="user.password" type="password" placeholder="Nhập mật khẩu" show-password/>
-                                <div v-if="errors.password" class="text-[14px] text-[#ff0000]">
-                                    {{ errors.password }}
-                                </div>
-                            </div>
-                        <div class="mb-[38px] w-[180px]">
-                            <div class="mb-[4px]">Xác nhận mật khẩu <span class="text-[red]">*</span></div>
-                            <el-input v-model="user.confirm_password" type="password" placeholder="Nhập mật khẩu xác nhận" show-password/>
-                            <div v-if="errors.confirm_password" class="text-[14px] text-[#ff0000]">
-                                {{ errors.confirm_password }}
-                            </div>
+                        <div class="mb-[38px] md:w-[350px] w-full">
+                            <el-form-item 
+                                label="Xác nhận mật khẩu" prop="password_confirmation"
+                                :inline-message="hasError('password_confirmation')"
+                                :error="getError('password_confirmation')"
+                            >
+                                <el-input
+                                    v-model="formData.password_confirmation"
+                                    type="password" size="large"
+                                    placeholder="Nhập mật khẩu xác nhận"
+                                    show-password
+                                />
+                            </el-form-item>
                         </div>
                         <div class="flex justify-center">
-                            <button type="button" @click="register()" class="px-[14px] py-[6px] rounded-[4px] bg-[#d0011b] text-white">
+                            <el-button
+                                :loading="loading"
+                                type="primary" size="large"
+                                class="min-w-[100px]"
+                                @click="doSubmit()"
+                            >
                                 Đăng ký
-                            </button>
+                            </el-button>
                         </div>
                     </el-form>
                 </div>
@@ -97,51 +133,92 @@
     </main>
 </template>
 <script>
-    import { Head, Link, useForm } from '@inertiajs/vue3';
-    import AppLayout from '@/Layouts/User/Layout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/User/Layout.vue';
+import form from '@/Mixins/form';
+import axios from 'axios';
 
-    export default {
-        components: {
-            Head,
-            Link,
-            AppLayout
-        },
-        async created() {
-        },
-        data: function () {
-            return {
-                user: {
-                    first_name: '',
-                    last_name: '',
-                    address: '',
-                    gender: '',
-                    birth_day: '',
-                    email: '',
-                    phone_number: '',
-                    password: '',
-                    confirm_password: '',
-                },
-                errors: []
-            }
-        },
-        methods: {
-            async register() {
-                this.errors = []
-                if(this.validateUser()) {
-                    
-                }
+export default {
+    components: {
+        Head,
+        Link,
+        AppLayout
+    },
+    mixins: [form],
+    data: function () {
+        return {
+            loading: false,
+            formData: this.$inertia.form({
+                first_name: null,
+                last_name: null,
+                address: null,
+                gender: null,
+                birthday: null,
+                email: null,
+                phone_number: null,
+                password: null,
+                password_confirmation: null,
+            }),
+            rules: {
+                first_name: [
+                    { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                    {
+                        max: 255,
+                        message: 'Tối đa 255 ký tự',
+                        trigger: ['change', 'blur'],
+                    },
+                ],
+                last_name: [
+                    { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                    {
+                        max: 255,
+                        message: 'Tối đa 255 ký tự',
+                        trigger: ['change', 'blur'],
+                    },
+                ],
+                address: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                gender: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                birthday: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                email: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                phone_number: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                password: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
+                password_confirmation: { required: true, message: 'Trường này là bắt buộc', trigger: ['change', 'blur'] },
             },
         }
+    },
+    methods: {
+        async submit() {
+            // this.loading = true
+            this.formData.post(route('store-register'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    this.loading = false
+                },
+                onError: (errors) => {
+                    this.loading = false
+                    this.setErrors(errors)
+                    this.$message({
+                        message: 'Vui lòng kiểm tra lại thông tin đăng ký',
+                        type: 'error',
+                        grouping: true
+                    })
+                },
+            })
+        },
     }
+}
 </script>
 <style>
 .form-register {
     border-radius: 5px;
     opacity: 1;
     padding: 2px;
-    max-width: 500px;
+    max-width: 600px;
     background: #fff;
     box-shadow: 0px 3px 6px #00000029;
+}
+.form-register .el-input {
+    width: 100%;
 }
 
 </style>

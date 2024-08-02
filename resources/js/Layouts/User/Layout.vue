@@ -4,7 +4,9 @@
     </header>
     <main>
         <div class="main" :class="{ 'min-h-[70vh]': isFooter }">
-            <slot name="main"/>
+            <div class="main-tab">
+                <slot name="main"/>
+            </div>
         </div>
     </main>
     <footer v-if="isFooter" class="bg-[#d0011b]">
@@ -91,20 +93,6 @@ main .main > .main-tab {
 }
 input:focus {
     border-color: #fff !important;
-}
-.el-menu {
-    border: none !important;
-}
-.el-sub-menu__title,
-.el-menu-item {
-    height: 36px !important;
-    line-height: normal !important;
-}
-.el-sub-menu__title {
-    padding-left: 0 !important;
-}
-.el-menu-item {
-    padding-left: 30px !important;
 }
 #cart-products {
     display: none;
@@ -210,6 +198,9 @@ input:focus {
 }
 #header-menu:hover #list-menu{
     display: block;
+}
+#mobile-menu .el-drawer__body {
+    padding: 0;
 }
 @media only screen and (max-width: 1024px) {
     .header-menu,

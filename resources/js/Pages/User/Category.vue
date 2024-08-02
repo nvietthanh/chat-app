@@ -249,9 +249,6 @@ export default {
 }
 </script>
 <style>
-#list-category [type='text']:focus {
-    --tw-ring-color: #000 !important;
-}
 #list-category [type='text'] {
     padding-left: 10px;
 }

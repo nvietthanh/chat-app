@@ -1,6 +1,6 @@
 <template>
     <div id="header" class="fixed top-0 left-[0px] right-[0px] bg-[#d0011b] text-[#fff] border-b-[2px] border-b-[#fff]">
-        <div class="header-menu flex justify-between items-center text-[14px]">
+        <div class="header-menu flex justify-between items-center text-[14px] gap-[14px]">
             <div class="header-menu-message flex-1">
                 <Link href="">
                     Message thông báo có sản phẩm mới bạn tìm xem
@@ -10,35 +10,39 @@
                 <div v-if="user" id="header-menu" class="relative cursor-pointer">
                     <div class="flex items-center">
                         <i class="bi bi-person text-[18px]"></i>
-                        <span class="ml-[4px]">Nguyễn Viết Thanh</span>
+                        <span class="ml-[4px]">{{ user?.fullname }}</span>
                     </div>
                     <div id="list-menu" class="text-[#000] w-[215px]">
-                        <div class="px-[12px] py-[8px]">
+                        <div class="px-[16px] py-[8px]">
                             <Link :href="route('cart')" class="py-[4px] flex items-center">
-                                <i class="bi bi-cart text-[20px] ml-[8px]"></i>
+                                <i class="bi bi-cart text-[20px]"></i>
                                 <span class="ml-[12px]">Giỏ hàng</span>
                             </Link>
-                            <Link :href="route('buyer.profile')" class="py-[4px] flex items-center">
-                                <i class="bi bi-person text-[20px] ml-[8px]"></i>
+                            <!-- <Link :href="route('buyer.profile')" class="py-[4px] flex items-center">
+                                <i class="bi bi-person text-[20px]"></i>
                                 <span class="ml-[12px]">Thông tin cá nhân</span>
-                            </Link>
+                            </Link> -->
                             <Link :href="route('buyer.order')" class="py-[4px] flex items-center">
-                                <i class="bi bi-bag text-[18px] ml-[8px]"></i>
+                                <i class="bi bi-bag text-[18px]"></i>
                                 <span class="ml-[12px]">Quản lý đơn hàng</span>
                             </Link>
                             <Link :href="route('maker.purchase-order')" class="py-[4px] flex items-center">
-                                <i class="bi bi-shop text-[18px] ml-[8px]"></i>
+                                <i class="bi bi-shop text-[18px]"></i>
                                 <span class="ml-[12px]">Quản lý trang bán hàng</span>
                             </Link>
+                            <div @click="hanldeLogout()" class="py-[4px] flex items-center">
+                                <i class="bi bi-box-arrow-left text-[18px]"></i>
+                                <span class="ml-[12px]">Đăng xuất</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div v-else class="flex items-center">
-                    <Link :href="route('login')">
+                    <Link :href="route('form-login')">
                         Đăng nhập
                     </Link>
                     <div class="w-[1px] h-[14px] bg-[#fff] mx-[8px]"></div>
-                    <Link :href="route('register')">
+                    <Link :href="route('form-register')">
                         Đăng ký
                     </Link>
                 </div>
@@ -100,103 +104,57 @@
                             </div>
                         </div>
                     </div>
-                    <div id="cart-icon" class="relative">
-                        <div class="cursor-pointer px-[12px] relative">
-                            <i class="bi bi-cart text-[26px]"></i>
-                            <div class="text-[13px] absolute bottom-[50%] flex items-center justify-center right-0 w-[24px] h-[20px] text-[#d0011b] bg-[#fff] rounded-[50%]">
-                                {{ this.$page.props.product_cart.length }}
-                            </div>
-                        </div>
-                        <div id="cart-products" class="py-[12px] text-[#000]">
-                            <div class="px-[18px] pb-[8px] border-b-[1px] border-[#b2b2b2]">
-                                Giỏ hàng
-                            </div>
-                            <div class="list-cart">
-                                <div id="list-cart-product">
-                                    <div v-for="product in this.$page.props.product_cart" class="px-[18px] py-[12px] flex">
-                                        <Link :href="route('product', 1)">
-                                            <img :src="product.image" alt="" class="w-[50px] h-[50px] border-[1px]">
-                                        </Link>
-                                        <div class="ml-[12px] flex-1">
-                                            <div class="flex justify-between">
-                                                <Link :href="route('product', 1)">
-                                                    <div class="hidden-two-line">
-                                                        {{ product.product_name }}
-                                                    </div>
-                                                </Link>
-                                                <div class="ml-[18px] text-[14px]">
-                                                    <div class="text-[#d0021c]">{{ formatPrice(product.price) }}</div>
-                                                    <div class="mt-[2px]">x{{ product.quality }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex justify-end">
-                                    <Link :href="route('cart')"
-                                        class="button mb-[4px] mt-[8px] mr-[32px] w-[120px] text-center h-[38px] leading-[38px] border-[1px] text-[white] bg-[#d0011b]">
-                                        Xem giỏ hàng
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <HeaderCart :user="user"/>
                 </div>
             </div>
         </div>
     </div>
     <el-drawer
         v-model="isShowMenu"
-        show-close
-        direction="ltr"
-        size="100%"
+        show-close direction="ltr" size="70%"
+        id="mobile-menu"
     >
         <template #header="{ titleId, titleClass }">
             <h4 :id="titleId" :class="titleClass">
                 Menu
             </h4>
         </template>
-        <div>
-            <div v-for="(menu, index) in listMenu" :key="index"
-                class="py-[6px] border-b-[1px] border-b-[#00000029]">
-                <Link v-if="!menu.routeList" :href="menu.route" class="flex items-center">
-                    <i :class="menu.icon"></i>
-                    <span class="mt-[2px]">{{ menu.routeName }}</span>
-                </Link>
-                <el-menu
-                    v-else
-                    @open="handleOpen"
-                    @close="handleClose"
-                >
-                    <el-sub-menu index="1">
+        <div class="pt-[12px]">
+            <template v-for="(menu, index) in listMenu" :key="index">
+                <el-menu v-if="!menu?.isLogin || (menu?.isLogin && user)">
+                    <el-menu-item v-if="!menu.routeList" :index="index" @click="handleMenu(menu)">
+                        <i :class="menu.icon"></i>
+                        <span>{{ menu.routeName }}</span>
+                    </el-menu-item>
+                    <el-sub-menu v-else :index="index">
                         <template #title>
-                            <div class="flex items-center">
-                                <i :class="menu.icon"></i>
-                                <span class="mt-[2px]">{{ menu.routeName }}</span>
-                            </div>
+                            <i :class="menu.icon"></i>
+                            <span>{{ menu.routeName }}</span>
                         </template>
-                        <el-menu-item index="1" v-for="(subMenu, index) in menu.routeList" :key="index">
-                            <Link :href="subMenu.route" class="flex items-center">
-                                <!-- <i :class="subMenu.icon"></i> -->
-                                <span class="mt-[2px]">{{ subMenu.routeName }}</span>
-                            </Link>
+                        <el-menu-item
+                            v-for="(subMenu, childIndex) in menu.routeList"
+                            :key="index + childIndex"
+                            @click="handleMenu(subMenu)"
+                        >
+                            <span class="ml-[8px]">{{ subMenu.routeName }}</span>
                         </el-menu-item>
                     </el-sub-menu>
                 </el-menu>
-            </div>
+            </template>
         </div>
     </el-drawer>
 </template>
 
 <script>
-import { Link } from '@inertiajs/vue3'
+import { router, Link } from '@inertiajs/vue3'
 import price from '@/Lib/price'
 import { Menu } from '@/Store/Const/menu'
+import HeaderCart from '@/Components/Cart/HeaderCart.vue'
 
 export default {
     mixins: [price],
     components: {
-        Link
+        Link, HeaderCart
     },
     data() {
         return {
@@ -221,9 +179,26 @@ export default {
 
             this.$inertia.visit(route('search', pagram))
         },
-        addCart() {
-            alert(1)
+        handleMenu(menu) {
+            switch (menu.action) {
+                case 'redirect':
+                    this.$inertia.visit(menu.route)
+                    break;
+                case 'logout':
+                    this.hanldeLogout()
+                    break;
+            }
         },
+        hanldeLogout() {
+            axios.post(route('logout'))
+                .then(({ data }) => {
+                    this.$inertia.visit(route('home'))
+                    this.$message({ message: data?.message, type: 'success' })
+                })
+                .catch((resopnse) => {
+                    this.$message({ message: resopnse?.data?.message, type: 'error' })
+                })
+        }
     }
 }
 </script>
